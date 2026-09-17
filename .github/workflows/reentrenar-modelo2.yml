@@ -1,0 +1,66 @@
+name: Reentrenar Modelo 2 (mensual) y publicar
+
+# Reentrena el Modelo 2 (ajuste continuo, pooled sobre todos los usuarios) y,
+# si el bosque exportado cambio, lo commitea y dispara un nuevo deploy a
+# Netlify. Corre el primer dia de cada mes, y tambien se puede lanzar a mano
+# desde la pestana "Actions" en GitHub ("Run workflow").
+#
+# Requiere estos secrets configurados en Settings -> Secrets and variables ->
+# Actions del repositorio (ver PROGRESO.md para instrucciones paso a paso):
+#   NETLIFY_AUTH_TOKEN   Personal Access Token de Netlify (para desplegar)
+#   NETLIFY_SITE_ID      f3b34cb0-442d-44d0-bef8-fd5564f2f45a (sitio swim-goal-4u)
+#
+# Opcional (fase futura, cuando haya datos reales de usuarios):
+#   SUPABASE_DB_URL      connection string de Postgres, para exportar
+#                        sesion_registro real a ml/sesion_registro_export.csv
+#                        antes de entrenar. Sin este secret, el script cae
+#                        automaticamente en el dataset sintetico de bootstrap
+#                        (ver ml/train_modelo2.py).
+
+on:
+  schedule:
+    - cron: "0 6 1 * *"   # dia 1 de cada mes, 06:00 UTC
+  workflow_dispatch: {}    # permite lanzarlo manualmente desde GitHub
+
+permissions:
+  contents: write
+
+jobs:
+  reentrenar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependencias
+        run: pip install scikit-learn pandas numpy
+
+      - name: Reentrenar Modelo 2
+        run: python ml/train_modelo2.py
+
+      - name: Commitear el bosque actualizado (si cambio)
+        id: commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet -- ml/modelo2_bosque.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git add ml/modelo2_bosque.json
+            git commit -m "chore: reentrenar Modelo 2 (mensual, automatico)"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Desplegar a Netlify (solo si el modelo cambio)
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          npx --yes netlify-cli@latest deploy --prod --dir "."
