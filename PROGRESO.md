@@ -253,3 +253,47 @@ los archivos nuevos).
 3. Revisar si vale la pena tambien re-entrenar Modelo 1 con datos reales de
    adherencia/resultado de los propios usuarios (hoy solo usa el ancla
    olimpica + sintetico).
+
+## Repo GitHub + Action mensual automatica (17 sep 2026)
+
+- **Repo creado**: https://github.com/dado-droid-666/entrenamiento-app-cuentas
+  (publico). `gh` CLI no se pudo instalar (quedo bloqueado por otro proceso
+  `msiexec` del sistema, ajeno a esta tarea) — el repo se creo a mano desde
+  github.com y se conecto via `git remote add origin` + `git push` normal
+  (Git Credential Manager ya tenia sesion de GitHub, no hizo falta token).
+- **GitHub Action**: `.github/workflows/reentrenar-modelo2.yml` — corre el
+  dia 1 de cada mes (cron `0 6 1 * *`, UTC) o manualmente desde la pestana
+  "Actions" del repo ("Run workflow"). Pasos: reentrena Modelo 2
+  (`python ml/train_modelo2.py`), si el JSON exportado cambio lo commitea y
+  hace push, y despliega a Netlify con `netlify-cli`.
+
+### ⚠️ PENDIENTE — Dani necesita configurar 2 secrets en GitHub para que el deploy automatico funcione
+
+Sin esto, la Action reentrena y commitea el modelo igual, pero el paso de
+deploy a Netlify fallara (no puedo generar estas credenciales por ti, por
+seguridad — hay que crearlas desde tu propia cuenta):
+
+1. Ve a https://github.com/dado-droid-666/entrenamiento-app-cuentas/settings/secrets/actions
+2. Click "New repository secret" y agrega:
+   - **`NETLIFY_SITE_ID`** = `f3b34cb0-442d-44d0-bef8-fd5564f2f45a`
+     (ya conocido, es el sitio `swim-goal-4u`)
+   - **`NETLIFY_AUTH_TOKEN`** = (nuevo Personal Access Token de Netlify)
+     Generalo en https://app.netlify.com/user/applications#personal-access-tokens
+     -> "New access token" -> copia el valor y pegalo aqui como secret.
+3. Listo — la proxima vez que corra la Action (o si la lanzas a mano desde
+   la pestana Actions -> "Reentrenar Modelo 2 (mensual) y publicar" -> "Run
+   workflow"), va a poder desplegar sola.
+
+### Pendiente (actualizado)
+1. Configurar los 2 secrets de arriba (Dani).
+2. Cuando haya usuarios reales usando la app, exportar `sesion_registro` a
+   `ml/sesion_registro_export.csv` y re-correr `train_modelo2.py` con datos
+   reales — opcionalmente automatizar tambien esa exportacion agregando un
+   secret `SUPABASE_DB_URL` (connection string de Postgres) al workflow.
+3. Revisar si vale la pena tambien re-entrenar Modelo 1 con datos reales de
+   adherencia/resultado de los propios usuarios (hoy solo usa el ancla
+   olimpica + sintetico).
+4. A partir de ahora, todo cambio de codigo deberia hacerse via
+   `git add -A; git commit -m "..."; git push` en vez de solo
+   `netlify deploy` directo, para que el repo en GitHub quede como fuente de
+   verdad.
