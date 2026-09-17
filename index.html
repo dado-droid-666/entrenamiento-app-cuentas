@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<title>Mi Plan de Entrenamiento</title>
+<meta name="theme-color" content="#061a2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mi Plan">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{
+  --bg:#061a2e;
+  --bg-card:#0e2b45cc;
+  --bg-card2:#154466cc;
+  --text:#f2f7fb;
+  --text-dim:#9db6cc;
+  --accent:#2ecc71;
+  --border:#1f4b6b;
+  --danger:#ff3b5c;
+  --radius:18px;
+  --safe-top:env(safe-area-inset-top);
+  --safe-bottom:env(safe-area-inset-bottom);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Segoe UI,Roboto,sans-serif;
+  overscroll-behavior:none;}
+html{
+  background:
+    linear-gradient(180deg,#061a2e 0%,#0a2e4a 45%,#0c3b5c 75%,#125a7a 100%);
+  min-height:100%;
+}
+body{padding-top:var(--safe-top);padding-bottom:calc(64px + var(--safe-bottom));min-height:100vh;
+  position:relative;overflow-x:hidden;background:transparent;}
+
+/* ---------- Fondo de olas ---------- */
+.waves-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.waves-bg svg{position:absolute;bottom:0;left:0;width:200%;height:auto;}
+.wave1{animation:waveMove 22s linear infinite; opacity:.35;}
+.wave2{animation:waveMove 34s linear infinite reverse; opacity:.25; bottom:-10px !important;}
+.wave3{animation:waveMove 46s linear infinite; opacity:.18; bottom:-24px !important;}
+@keyframes waveMove{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+.screen, .bottomnav{position:relative;z-index:1;}
+@media (prefers-reduced-motion:reduce){
+  .wave1,.wave2,.wave3{animation:none;}
+}
+h1,h2,h3{margin:0;font-weight:700;}
+p{margin:0;}
+.screen{display:none;padding:20px 18px 24px;max-width:520px;margin:0 auto;animation:fadein .18s ease;}
+.screen.active{display:block;}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
+
+/* ---------- Header comun ---------- */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.topbar .brand{font-size:15px;color:var(--text-dim);letter-spacing:.02em;}
+.topbar .brand b{color:var(--text);}
+
+/* ---------- HOY ---------- */
+.countdown{
+  text-align:center;padding:26px 10px;border-radius:var(--radius);
+  background:radial-gradient(circle at 50% 0%, #1a4568 0%, #0a2438 70%);
+  border:1px solid var(--border);margin-bottom:18px;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+}
+.countdown-num{font-size:52px;font-weight:800;line-height:1;letter-spacing:-0.02em;}
+.countdown-label{color:var(--text-dim);font-size:13px;margin-top:6px;text-transform:uppercase;letter-spacing:.08em;}
+#hoy-fecha{color:var(--text-dim);font-size:13px;margin-bottom:10px;text-align:center;}
+
+.session-card{border-left:4px solid var(--accent);}
+.session-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.session-card h2{font-size:22px;margin-bottom:6px;}
+.session-card .obj{color:var(--text-dim);font-size:14px;margin-bottom:8px;}
+.session-card .total{font-size:13px;color:var(--accent);font-weight:600;}
+
+.tipo-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;
+  padding:5px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:.03em;}
+.tipo-badge.small{text-transform:none;font-size:12px;padding:4px 9px;}
+.tipo-fuerza{background:#1b365d33;color:#6ea8ff;}
+.tipo-alberca{background:#1a6b7a33;color:#3fd0e6;}
+.tipo-descanso{background:#5a657033;color:#b8bfc9;}
+.tipo-competencia{background:#8b1e3f33;color:#ff6b8f;}
+.done-badge{font-size:12px;font-weight:700;color:#2ecc71;background:#2ecc7122;padding:5px 10px;border-radius:999px;}
+
+.big-btn{
+  display:block;width:100%;margin-top:16px;padding:16px;border:none;border-radius:14px;
+  background:var(--text);color:#0a2438;font-size:16px;font-weight:700;text-align:center;
+}
+.big-btn:active{transform:scale(.98);}
+.big-btn.secondary{background:transparent;border:1px solid var(--border);color:var(--text);}
+
+/* ---------- PLAYER ---------- */
+#player-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.player-progress{color:var(--text-dim);font-size:13px;font-weight:600;}
+.progressbar-track{width:100%;height:6px;background:var(--bg-card2);border-radius:999px;overflow:hidden;margin-bottom:22px;}
+.progressbar-track > div{height:100%;transition:width .2s ease;}
+.player-body{min-height:220px;display:flex;flex-direction:column;justify-content:center;padding:10px 4px 30px;}
+.block-title{font-size:15px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;}
+.block-desc{font-size:22px;line-height:1.4;margin-bottom:14px;}
+.player-nav{display:flex;gap:10px;margin-top:10px;}
+.player-nav .big-btn{margin-top:0;flex:1;}
+#btn-anterior{flex:0 0 90px;}
+#btn-anterior:disabled{opacity:.35;}
+
+.rest-timer{display:none;flex-direction:column;gap:10px;margin:18px 0 4px;padding:14px;background:var(--bg-card2);
+  border-radius:14px;border:1px solid var(--border);}
+.rest-timer-row{display:flex;align-items:center;gap:10px;}
+#timer-display{font-size:26px;font-weight:800;min-width:78px;font-variant-numeric:tabular-nums;}
+.timer-btns{display:flex;flex-wrap:wrap;gap:8px;flex:1;}
+.timer-btn{background:var(--bg-card);border:1px solid var(--border);color:var(--text);
+  padding:8px 12px;border-radius:10px;font-size:13px;font-weight:600;}
+.timer-btn.suggested{background:var(--accent);border-color:var(--accent);color:#06331b;}
+#timer-stop{background:transparent;border:none;color:var(--text-dim);font-size:13px;align-self:flex-end;}
+.timer-sound-hint{font-size:11px;color:var(--text-dim);opacity:.8;}
+
+/* ---------- flash visual al terminar el timer (respaldo cuando no hay sonido) ---------- */
+#flash-overlay{position:fixed;inset:0;z-index:999;pointer-events:none;background:var(--accent);opacity:0;}
+#flash-overlay.flash-pulse{animation:flashPulse .5s ease-out 3;}
+@keyframes flashPulse{
+  0%{opacity:0;}
+  15%{opacity:.55;}
+  100%{opacity:0;}
+}
+@media (prefers-reduced-motion:reduce){
+  #flash-overlay.flash-pulse{animation:none;}
+}
+
+/* ---------- MODAL: registro de bloque ---------- */
+.registro-overlay{position:fixed;inset:0;z-index:1000;background:rgba(4,14,26,.72);
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .18s ease;}
+.registro-overlay.open{opacity:1;pointer-events:auto;}
+.registro-modal{width:100%;max-width:520px;background:var(--bg-card);border:1px solid var(--border);
+  border-top-left-radius:22px;border-top-right-radius:22px;padding:20px 18px calc(20px + var(--safe-bottom));
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  transform:translateY(12px);transition:transform .18s ease;max-height:80vh;overflow-y:auto;}
+.registro-overlay.open .registro-modal{transform:translateY(0);}
+.registro-modal h3{font-size:18px;margin-bottom:14px;}
+.registro-ejercicio-row{margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+.registro-ejercicio-row:last-child{border-bottom:none;}
+.registro-ejercicio-nombre{font-size:14px;color:var(--text-dim);margin-bottom:8px;}
+.registro-inputs{display:flex;gap:10px;}
+.registro-inputs label{flex:1;display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--text-dim);}
+.registro-inputs input{background:var(--bg-card2);border:1px solid var(--border);border-radius:10px;
+  color:var(--text);padding:10px;font-size:15px;width:100%;}
+.registro-esfuerzo{margin-top:6px;margin-bottom:14px;}
+.registro-esfuerzo-label{font-size:13px;color:var(--text-dim);margin-bottom:8px;}
+.esfuerzo-opciones{display:flex;gap:8px;justify-content:space-between;}
+.esfuerzo-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;
+  background:var(--bg-card2);border:1px solid var(--border);border-radius:12px;padding:10px 4px;
+  color:var(--text-dim);font-size:10px;}
+.esfuerzo-btn .emoji{font-size:22px;}
+.esfuerzo-btn.selected{border-color:var(--accent);background:#2ecc7122;color:var(--accent);}
+.registro-error{color:var(--danger);font-size:13px;margin-bottom:10px;text-align:center;}
+
+/* ---------- SETUP: perfil + prueba CSS ---------- */
+.perfil-grid{display:flex;gap:10px;margin-bottom:4px;}
+.perfil-grid label{flex:1;display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--text-dim);}
+.css-test-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:6px;}
+.css-test-item{display:flex;align-items:center;gap:8px;}
+.css-test-item span{width:96px;font-size:13px;color:var(--text-dim);flex-shrink:0;}
+.css-test-item input{flex:1;min-width:0;}
+
+
+/* ---------- SEMANA ---------- */
+.semana-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.semana-nav-btn{background:var(--bg-card);border:1px solid var(--border);color:var(--text);
+  width:40px;height:40px;border-radius:12px;font-size:18px;}
+.semana-nav-btn:disabled{opacity:.3;}
+#semana-titulo{font-size:20px;}
+#semana-fase{color:var(--text-dim);font-size:13px;}
+
+.day-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;border-left:4px solid transparent;padding:14px 16px;}
+.day-row.tipo-fuerza{border-left-color:#3d6ac9;}
+.day-row.tipo-alberca{border-left-color:#1fb6cd;}
+.day-row.tipo-descanso{border-left-color:#5a6570;}
+.day-row.tipo-competencia{border-left-color:#ff3b5c;}
+.day-row-left{display:flex;flex-direction:column;width:78px;flex-shrink:0;}
+.day-name{font-size:13px;font-weight:700;}
+.day-date{font-size:11px;color:var(--text-dim);}
+.day-row-mid{flex:1;display:flex;flex-direction:column;gap:4px;}
+.day-total{font-size:12px;color:var(--text-dim);}
+.day-row-right{color:var(--text-dim);font-size:18px;}
+
+/* ---------- PLAN (semanas) ---------- */
+.week-card{margin-bottom:12px;border-left:4px solid var(--accent);}
+.week-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.week-num{font-size:16px;font-weight:700;}
+.fase-badge{font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;}
+.week-dates{color:var(--text-dim);font-size:13px;margin-bottom:10px;}
+.week-progress-bar{width:100%;height:5px;background:var(--bg-card2);border-radius:999px;overflow:hidden;}
+.week-progress-bar > div{height:100%;}
+.week-progress-txt{font-size:11px;color:var(--text-dim);margin-top:6px;}
+
+/* ---------- NAV inferior ---------- */
+.bottomnav{
+  position:fixed;left:0;right:0;bottom:0;display:flex;
+  background:#082238ee;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);
+  padding-bottom:var(--safe-bottom);z-index:50;
+}
+.navbtn{flex:1;background:none;border:none;color:var(--text-dim);padding:10px 4px 8px;
+  font-size:11px;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.navbtn .ico{font-size:20px;}
+.navbtn.active{color:var(--text);}
+.navbtn.active .ico{filter:drop-shadow(0 0 6px rgba(255,255,255,.3));}
+
+h3.section-title{font-size:14px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;margin:20px 0 10px;}
+
+/* ---------- SETUP ---------- */
+.setup-label{display:block;font-size:13px;color:var(--text-dim);margin:14px 0 6px;}
+.setup-input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--border);
+  background:var(--bg-card2);color:var(--text);font-size:15px;}
+.setup-hint{font-size:12px;color:var(--text-dim);margin-top:6px;}
+#screen-setup.active ~ .bottomnav{display:none;}
+#screen-login.active ~ .bottomnav{display:none;}
+
+/* ---------- Eventos (pruebas) ---------- */
+.eventos-grupo{margin-bottom:12px;}
+.eventos-grupo h4{font-size:12px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;}
+.eventos-chips{display:flex;flex-wrap:wrap;gap:8px;}
+.evento-chip{display:inline-flex;align-items:center;gap:6px;background:var(--bg-card2);border:1px solid var(--border);
+  border-radius:999px;padding:7px 12px;font-size:13px;cursor:pointer;}
+.evento-chip input{accent-color:var(--accent);}
+.evento-chip.checked{border-color:var(--accent);color:var(--accent);}
+#hoy-eventos{text-align:center;font-size:12px;color:var(--accent);margin-bottom:12px;}
+
+/* ---------- Selector de dias ---------- */
+.dias-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:6px;}
+.dia-row{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:var(--bg-card2);border:1px solid var(--border);border-radius:10px;padding:8px 12px;}
+.dia-row span{font-size:13px;font-weight:600;}
+.dia-row select{background:var(--bg-card);color:var(--text);border:1px solid var(--border);
+  border-radius:8px;padding:6px 8px;font-size:13px;}
+
+
+
+</style>
+</head>
+<body>
+
+<div class="waves-bg" aria-hidden="true">
+  <svg class="wave3" viewBox="0 0 1600 200" preserveAspectRatio="none"><path d="M0,100 C200,180 400,20 600,100 C800,180 1000,20 1200,100 C1400,180 1600,20 1800,100 L1800,200 L0,200 Z" fill="#0e5c86"/></svg>
+  <svg class="wave2" viewBox="0 0 1600 200" preserveAspectRatio="none"><path d="M0,110 C220,30 420,190 620,110 C820,30 1020,190 1220,110 C1420,30 1620,190 1820,110 L1820,200 L0,200 Z" fill="#146f9e"/></svg>
+  <svg class="wave1" viewBox="0 0 1600 200" preserveAspectRatio="none"><path d="M0,120 C240,60 440,180 640,120 C840,60 1040,180 1240,120 C1440,60 1640,180 1840,120 L1840,200 L0,200 Z" fill="#1c86ba"/></svg>
+</div>
+
+<!-- ===================== LOGIN ===================== -->
+<section id="screen-login" class="screen active">
+  <div class="topbar"><span class="brand">Mi Plan de Entrenamiento</span></div>
+  <div class="card" style="margin-bottom:16px;">
+    <h2 style="font-size:20px;margin-bottom:6px;" id="login-title">Inicia sesion</h2>
+    <p style="color:var(--text-dim);font-size:14px;line-height:1.5;margin-bottom:16px;">
+      Cada quien tiene su propio plan y progreso, sincronizado en la nube.
+    </p>
+    <form id="login-form">
+      <label class="setup-label" for="login-email">Email</label>
+      <input class="setup-input" type="email" id="login-email" required autocomplete="email">
+
+      <label class="setup-label" for="login-password">Contrasena</label>
+      <input class="setup-input" type="password" id="login-password" required autocomplete="current-password" minlength="6">
+
+      <p id="login-error" style="color:var(--danger);font-size:13px;margin-top:10px;display:none;"></p>
+
+      <button class="big-btn" type="submit" id="btn-login-submit">Entrar</button>
+    </form>
+    <button class="big-btn secondary" id="btn-login-toggle" style="margin-top:10px;">No tengo cuenta, crear una</button>
+  </div>
+</section>
+
+<!-- ===================== SETUP (configura tu competencia) ===================== -->
+<section id="screen-setup" class="screen">
+  <div class="topbar">
+    <span class="brand">Configura tu <b>plan</b></span>
+    <button class="semana-nav-btn" id="btn-logout" title="Cerrar sesion">🚪</button>
+  </div>
+  <div class="card" style="margin-bottom:16px;">
+    <p style="color:var(--text-dim);font-size:14px;line-height:1.5;margin-bottom:16px;">
+      Dinos cuando es tu competencia y armamos tu plan de entrenamiento (alberca + fuerza),
+      usando la misma progresion de fases (Base &rarr; Construccion &rarr; Pico &rarr; Especifico &rarr; Taper)
+      escalada a las semanas que te quedan.
+    </p>
+    <form id="setup-form">
+      <label class="setup-label">¿Que dias puedes entrenar?</label>
+      <p class="setup-hint" style="margin-bottom:8px;">Elige alberca / gimnasio / descanso para cada dia. Si eliges menos dias de los que tiene el plan original, rotamos cual sesion se omite cada semana para que sigas tocando todo. Si eliges mas, se agrega volumen extra.</p>
+      <div id="setup-dias"></div>
+
+      <label class="setup-label" for="setup-competition">Fecha de tu competencia</label>
+      <input class="setup-input" type="date" id="setup-competition" required>
+
+      <label class="setup-label" for="setup-start">Fecha de inicio (opcional)</label>
+      <input class="setup-input" type="date" id="setup-start">
+      <p class="setup-hint">Si la dejas vacia, empezamos hoy.</p>
+
+      <label class="setup-label">¿Que prueba(s) vas a nadar? (elige una o mas)</label>
+      <div id="setup-eventos"></div>
+
+      <label class="setup-label">Tu perfil</label>
+      <p class="setup-hint" style="margin-bottom:8px;">Esto nos ayuda a calibrar tu punto de partida (ritmo de alberca y carga inicial de fuerza) con un modelo entrenado con datos reales de nadadores.</p>
+      <div class="perfil-grid">
+        <label>Edad<input class="setup-input" type="number" id="perfil-edad" min="10" max="90"></label>
+        <label>Peso (kg)<input class="setup-input" type="number" step="0.5" id="perfil-peso" min="30" max="200"></label>
+        <label>Altura (cm)<input class="setup-input" type="number" id="perfil-altura" min="120" max="220"></label>
+      </div>
+      <label class="setup-label" for="perfil-nivel">Nivel de experiencia</label>
+      <select class="setup-input" id="perfil-nivel">
+        <option value="principiante">Principiante</option>
+        <option value="intermedio" selected>Intermedio</option>
+        <option value="avanzado">Avanzado</option>
+      </select>
+
+      <label class="setup-label">Prueba de nivel (Critical Swim Speed)</label>
+      <p class="setup-hint" style="margin-bottom:8px;">
+        Nada 400m y 200m a maximo esfuerzo (con descanso entre ambos) y anota tus tiempos.
+        Esto nos da tu ritmo objetivo (CSS) para calibrar el plan a tu nivel real, no a una
+        categoria generica. El 50m es opcional pero ayuda a afinar mas.
+      </p>
+      <div class="css-test-grid">
+        <div class="css-test-item">
+          <span>400m</span>
+          <input class="setup-input" type="number" id="css-400-min" placeholder="min" min="0">
+          <input class="setup-input" type="number" id="css-400-seg" placeholder="seg" min="0" max="59">
+        </div>
+        <div class="css-test-item">
+          <span>200m</span>
+          <input class="setup-input" type="number" id="css-200-min" placeholder="min" min="0">
+          <input class="setup-input" type="number" id="css-200-seg" placeholder="seg" min="0" max="59">
+        </div>
+        <div class="css-test-item">
+          <span>50m (opcional)</span>
+          <input class="setup-input" type="number" id="css-50-min" placeholder="min" min="0">
+          <input class="setup-input" type="number" id="css-50-seg" placeholder="seg" min="0" max="59">
+        </div>
+      </div>
+      <p id="css-pace-resultado" class="setup-hint"></p>
+
+      <button class="big-btn" type="submit">Crear mi plan</button>
+      <button class="big-btn secondary" type="button" id="btn-setup-cancelar">Cancelar</button>
+    </form>
+  </div>
+</section>
+
+<!-- ===================== HOY ===================== -->
+<section id="screen-hoy" class="screen">
+  <div class="topbar"><span class="brand">Plan <b class="brand-comp-date">15 Nov</b></span><span class="brand" id="hoy-fecha-top"></span></div>
+  <div class="countdown">
+    <div class="countdown-num" id="countdown-num">–</div>
+    <div class="countdown-label" id="countdown-label">cargando…</div>
+  </div>
+  <div id="hoy-eventos"></div>
+  <div id="hoy-fecha"></div>
+  <div id="hoy-card"></div>
+  <button class="big-btn" id="btn-empezar">Empezar sesion</button>
+</section>
+
+<!-- ===================== PLAYER ===================== -->
+<section id="screen-player" class="screen">
+  <div class="topbar">
+    <button class="navbtn" id="btn-player-back" style="flex:0"><span class="ico">←</span></button>
+    <span class="brand">Sesion</span>
+    <span style="width:24px"></span>
+  </div>
+  <div id="player-header"></div>
+  <div class="progressbar-track"><div id="player-progress-bar" style="width:0%"></div></div>
+  <div class="player-body" id="player-block"></div>
+
+  <div class="rest-timer" id="rest-timer-wrap">
+    <div class="rest-timer-row">
+      <div id="timer-display">--:--</div>
+      <button id="timer-stop">detener</button>
+    </div>
+    <div class="timer-btns" id="timer-btns"></div>
+    <div class="timer-sound-hint">🔇 Activa el sonido (quita el modo silencio) para escuchar la alarma</div>
+  </div>
+
+  <div class="player-nav">
+    <button class="big-btn secondary" id="btn-anterior">←</button>
+    <button class="big-btn" id="btn-siguiente">Siguiente →</button>
+  </div>
+</section>
+
+<!-- ===================== SEMANA ===================== -->
+<section id="screen-semana" class="screen">
+  <div class="topbar"><span class="brand">Tu semana</span></div>
+  <div class="semana-header">
+    <button class="semana-nav-btn" id="btn-semana-prev">←</button>
+    <div style="text-align:center">
+      <div id="semana-titulo"></div>
+      <div id="semana-fase"></div>
+    </div>
+    <button class="semana-nav-btn" id="btn-semana-next">→</button>
+  </div>
+  <div id="semana-list"></div>
+</section>
+
+<!-- ===================== PLAN (9 semanas) ===================== -->
+<section id="screen-plan" class="screen">
+  <div class="topbar">
+    <span class="brand">Plan completo</span>
+    <button class="semana-nav-btn" id="btn-config" title="Cambiar fecha de competencia">⚙️</button>
+  </div>
+  <h3 class="section-title" id="plan-rango"></h3>
+  <div id="plan-list"></div>
+</section>
+
+<!-- ===================== NAV ===================== -->
+<nav class="bottomnav">
+  <button class="navbtn active" data-screen="hoy"><span class="ico">🏠</span>Hoy</button>
+  <button class="navbtn" data-screen="semana"><span class="ico">📅</span>Semana</button>
+  <button class="navbtn" data-screen="plan"><span class="ico">📋</span>Plan</button>
+</nav>
+
+<div id="flash-overlay" aria-hidden="true"></div>
+
+<!-- ===================== MODAL: registro de bloque (peso/reps/esfuerzo) ===================== -->
+<div id="registro-overlay" class="registro-overlay" aria-hidden="true">
+  <div class="registro-modal">
+    <h3 id="registro-titulo">Registra tu bloque</h3>
+    <div id="registro-ejercicios"></div>
+    <div class="registro-esfuerzo">
+      <p class="registro-esfuerzo-label">¿Como se sintio?</p>
+      <div class="esfuerzo-opciones" id="registro-esfuerzo-opciones"></div>
+    </div>
+    <p id="registro-error" class="registro-error" style="display:none">Completa esfuerzo antes de continuar.</p>
+    <button class="big-btn" id="btn-registro-confirmar">Confirmar y continuar</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script src="ejercicios.js"></script>
+<script src="parser.js"></script>
+<script src="progresion.js"></script>
+<script src="arboles.js"></script>
+<script src="modelo1.js"></script>
+<script src="modelo2.js"></script>
+<script src="data.js"></script>
+<script src="auth.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
