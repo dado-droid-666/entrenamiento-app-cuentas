@@ -36,6 +36,7 @@ Genera:
 import json
 import numpy as np
 import pandas as pd
+from datetime import date, datetime, timezone
 from pathlib import Path
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
@@ -121,7 +122,8 @@ def exportar_arbol(tree, feature_names):
 arboles = [exportar_arbol(est, FEATURES) for est in modelo.estimators_]
 
 salida = {
-    "version": "modelo2_v1_2026-09-16",
+    "version": f"modelo2_v1_{date.today().isoformat()}",
+    "trained_at": datetime.now(timezone.utc).isoformat(),
     "features": FEATURES,
     "n_estimators": len(arboles),
     "mae_test": round(float(mean_absolute_error(y_test, pred)), 4),

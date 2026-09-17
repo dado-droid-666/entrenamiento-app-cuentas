@@ -31,6 +31,7 @@ import json
 import re
 import numpy as np
 import pandas as pd
+from datetime import date, datetime, timezone
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
@@ -159,7 +160,8 @@ def exportar_arbol(tree, feature_names):
 arboles = [exportar_arbol(est, FEATURES) for est in modelo.estimators_]
 
 salida = {
-    "version": "rf_v1_2026-09-16",
+    "version": f"rf_v1_{date.today().isoformat()}",
+    "trained_at": datetime.now(timezone.utc).isoformat(),
     "features": FEATURES,
     "n_estimators": len(arboles),
     "accuracy_test_sintetico": round(float(accuracy_score(y_test, pred)), 4),

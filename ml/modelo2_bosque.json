@@ -1,5 +1,6 @@
 {
  "version": "modelo2_v1_2026-09-16",
+ "trained_at": "2026-09-17T04:56:25.110646+00:00",
  "features": [
   "tier",
   "esfuerzo_promedio_3",
