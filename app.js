@@ -328,6 +328,8 @@ function leerPerfilYGuardar() {
   const cssPace = calcularCSSPace(tiempo400Seg, tiempo200Seg);
 
   const perfil = { edad, pesoKg, alturaCm, nivelExperiencia, cssPace, tiempo50Seg };
+  const consentEntrenamiento = !!(document.getElementById("consent-entrenamiento") && document.getElementById("consent-entrenamiento").checked);
+  perfil.consentEntrenamiento = consentEntrenamiento;
   const { tier, modeloVersion } = predecirTier(perfil);
 
   localStorage.setItem(PERFIL_LOCAL_KEY, JSON.stringify(Object.assign({ tier, modeloVersion }, perfil)));
@@ -349,7 +351,30 @@ function prefillPerfilForm() {
   if (perfil.pesoKg) document.getElementById("perfil-peso").value = perfil.pesoKg;
   if (perfil.alturaCm) document.getElementById("perfil-altura").value = perfil.alturaCm;
   if (perfil.nivelExperiencia) document.getElementById("perfil-nivel").value = perfil.nivelExperiencia;
+  const consentBox = document.getElementById("consent-entrenamiento");
+  if (consentBox) {
+    consentBox.checked = perfil.consentEntrenamiento === true;
+    syncConsentChip();
+  }
 }
+
+// Consentimiento: chip visual + ver más
+function syncConsentChip() {
+  const box = document.getElementById("consent-entrenamiento");
+  const chip = document.getElementById("consent-chip");
+  if (box && chip) chip.classList.toggle("checked", box.checked);
+}
+
+document.addEventListener("change", (e) => {
+  if (e.target && e.target.id === "consent-entrenamiento") syncConsentChip();
+});
+document.addEventListener("click", (e) => {
+  if (e.target && e.target.id === "consent-ver-mas") {
+    e.preventDefault();
+    const d = document.getElementById("consent-detalle");
+    if (d) d.style.display = d.style.display === "none" ? "block" : "none";
+  }
+});
 
 // Perfil + tier ya calculados (Modelo 1), para personalizar la experiencia:
 // ritmo objetivo de alberca (a partir del CSS real del usuario) y sugerencias

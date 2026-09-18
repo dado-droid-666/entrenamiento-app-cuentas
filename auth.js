@@ -158,13 +158,20 @@ window.pushRegistroToCloud = async function (sesionKey, registros) {
 // ---------------- perfil fisico + prueba CSS + tier (Modelo 1) ----------------
 window.pushPerfilToCloud = async function (perfil) {
   if (!cloudEnabled() || !currentUser) return;
-  await supabaseClient.from("profiles").upsert({
+  const row = {
     id: currentUser.id,
     edad: perfil.edad,
     peso_kg: perfil.pesoKg,
     altura_cm: perfil.alturaCm,
     nivel_experiencia: perfil.nivelExperiencia,
-  });
+  };
+  // Columna consent_entrenamiento (migración sql/004_consentimiento.sql).
+  // Si aún no está aplicada en el proyecto, reintenta sin ella.
+  try {
+    await supabaseClient.from("profiles").upsert(Object.assign({ consent_entrenamiento: !!perfil.consentEntrenamiento }, row));
+  } catch (e) {
+    await supabaseClient.from("profiles").upsert(row);
+  }
 };
 
 window.pushPruebaEstandarToCloud = async function (prueba) {

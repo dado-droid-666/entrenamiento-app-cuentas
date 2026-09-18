@@ -338,6 +338,22 @@ h3.section-title{font-size:14px;color:var(--text-dim);text-transform:uppercase;l
       </div>
       <p id="css-pace-resultado" class="setup-hint"></p>
 
+      <label class="setup-label">Privacidad y mejora de modelos</label>
+      <label class="evento-chip" id="consent-chip" style="cursor:pointer;">
+        <input type="checkbox" id="consent-entrenamiento">
+        <span>Acepto compartir mis datos de entrenamiento anonimizados para mejorar los modelos</span>
+      </label>
+      <p class="setup-hint">Edad en rangos de 5 años, peso, altura, tiempos 400m/200m/50m, cargas/reps/tiempos y esfuerzo 1-5, adherencia. Sin email ni nombre. Retirarlo solo te excluye de futuros entrenamientos. <a href="#" id="consent-ver-mas">Ver más</a></p>
+      <div id="consent-detalle" style="display:none;" class="card">
+        <p style="font-size:13px;line-height:1.6;color:var(--text-dim);">
+          <b>Qué se exporta:</b> perfil físico + pruebas CSS + registro por ejercicio + sesiones completadas vs planificadas. Nunca email, nombre, notas libres, IP ni dispositivo.<br>
+          <b>Anonimización:</b> tu usuario se reemplaza por un código aleatorio irreversible por exportación; la edad se agrupa en rangos de 5 años.<br>
+          <b>Para qué:</b> entrenar el Modelo 1 (nivel) y el Modelo 2 (ajuste de carga).<br>
+          <b>Retiro:</b> desmarca la casilla y guarda de nuevo: dejas de incluirte en el siguiente reentrenamiento mensual. Las versiones de modelos ya entrenadas permanecen hasta ser reemplazadas (no se pueden "desentrenar"). Tu historial en la app no se borra.<br>
+          <b>Derechos:</b> ver, descargar y borrar tus datos desde tu cuenta; el borrado te excluye de futuras exportaciones.
+        </p>
+      </div>
+
       <button class="big-btn" type="submit">Crear mi plan</button>
       <button class="big-btn secondary" type="button" id="btn-setup-cancelar">Cancelar</button>
     </form>
