@@ -1,6 +1,6 @@
 {
- "version": "modelo2_v1_2026-10-01",
- "trained_at": "2026-10-01T06:09:20.716312+00:00",
+ "version": "modelo2_v1_2026-11-01",
+ "trained_at": "2026-11-01T06:35:20.021593+00:00",
  "features": [
   "tier",
   "esfuerzo_promedio_3",
